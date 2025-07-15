@@ -33,6 +33,26 @@ questions = [
     }
 ]
 
+#선생님들 데이터
+teacher_data = {
+    "곽휘호 선생님": "RDNB",
+    "하진성 선생님": "LDNB",
+    "이미라 선생님": "RFNB",
+    "박지오 선생님": "LDNB",
+    "천예현 선생님": "LFNB",
+    "김은정 선생님": "RDNB",
+    "최신호 선생님": "LDNB",
+    "유현수 선생님": "RDVA",
+    "민다영 선생님": "RDNA",
+    "이희백 선생님": "RDNA",
+    "윤희정 선생님": "LDNB",
+    "박서현 선생님": "RDNB",
+    "조한정 선생님": "RDNB",
+    "서민호 선생님": "LFNB",
+    "주진모 선생님": "LDVB"
+}
+
+
 # 유형 결과
 type_data = {
     "LDNB": {
@@ -246,6 +266,22 @@ type_data = {
         )
     },
 }
+
+#나랑 같은 유형의 선생님
+same_type_teachers = [name for name, t_code in teacher_data.items() if t_code == code]
+
+if same_type_teachers:
+    st.markdown("🔍 나와 같은 유형의 선생님")
+    for name in same_type_teachers:
+        st.write(f"- {name}")
+
+#모든 선생님 유형 보여주기
+st.markdown("---")
+st.markdown("🏫 우리 학교 선생님들의 유형")
+
+for name, t_code in teacher_data.items():
+    t_result = type_data.get(t_code)
+    st.write(f"**{name}**: {t_result['name']} ({t_code})")
 
 
 
