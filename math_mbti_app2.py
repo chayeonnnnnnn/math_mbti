@@ -305,9 +305,9 @@ if same_type_teachers:
 st.markdown("---")
 st.markdown("🏫 우리 학교 선생님들의 유형")
 
-for name, t_code in teacher_data.items():
-    t_result = type_data.get(t_code)
-    st.write(f"**{name}**: {t_result['name']} ({t_code})")
+    for name, t_code in teacher_data.items():
+        t_result = type_data.get(t_code)
+        st.write(f"**{name}**: {t_result['name']} ({t_code})")
 
 st.markdown("---")
 
