@@ -1,37 +1,56 @@
 import streamlit as st
+from collections import Counter
 
-# Streamlit 페이지 설정
 st.set_page_config(page_title="수학 성향 MBTI", page_icon="📐")
 
-# 상태 저장
 if "page" not in st.session_state:
     st.session_state.page = 0
 if "answers" not in st.session_state:
     st.session_state.answers = []
 
-# 질문 데이터
+# 질문 데이터 (12문제)
 questions = [
-    {
-        "title": "문제 접근",
-        "question": "문제를 풀기위해 알고있던 공식을 바로 적용하기보단 공식 유도 과정을 통해 처음부터 풀어보는 편이다.",
-        "options": ["그렇다 (L)", "아니다 (R)"]
-    },
-    {
-        "title": "풀이 스타일",
-        "question": "문제를 풀 때, 시간이 걸려도 풀이 과정을 하나하나 검산하며 정확히 풀고 싶다.",
-        "options": ["그렇다 (D)", "아니다 (F)"]
-    },
-    {
-        "title": "이해 스타일",
-        "question": "개념을 익힐 때, 하나의 개념을 쪼개서 세부적으로 파악하고 이해하려는 편이다.",
-        "options": ["그렇다 (N)", "아니다 (V)"]
-    },
-    {
-        "title": "문제 직면 태도",
-        "question": "복잡하거나 어려울 것 같은 문제를 봐도 끝까지 풀어보려고 시도하는 편이다.",
-        "options": ["그렇다 (B)", "아니다 (A)"]
-    }
+    {"title": "문제 접근", "code": ["L", "R"], "question": "문제를 풀 때, 관련된 공식을 대부분 알고 있거나 떠올릴 수 있다."},
+    {"title": "문제 접근", "code": ["L", "R"], "question": "공식으로 문제가 바로 풀리지 않으면, 원리를 떠올려 문제를 풀 수 있다."},
+    {"title": "문제 접근", "code": ["L", "R"], "question": "문제를 풀며 '왜 이런 공식이 나왔는지' 그 원리를 스스로 생각해보려 한다."},
+
+    {"title": "풀이 스타일", "code": ["D", "F"], "question": "풀이할 때 중간 계산 과정까지 꼼꼼히 검산하며 푸는 편이다."},
+    {"title": "풀이 스타일", "code": ["D", "F"], "question": "정답이 맞더라도 풀이를 다시 확인해보려 한다."},
+    {"title": "풀이 스타일", "code": ["D", "F"], "question": "틀린 문제는 원인을 꼼꼼하게 분석하려 한다."},
+
+    {"title": "이해 스타일", "code": ["N", "V"], "question": "개념을 배울 때, 작은 정의나 조건까지 꼼꼼하게 확인하는 편이다."},
+    {"title": "이해 스타일", "code": ["N", "V"], "question": "하나의 개념을 세부적으로 쪼개어 이해하려고 노력한다."},
+    {"title": "이해 스타일", "code": ["N", "V"], "question": "전체 흐름보다, 세부적인 요소를 먼저 완벽히 이해하려고 한다."},
+
+    {"title": "문제 직면 태도", "code": ["B", "A"], "question": "복잡한 문제를 보면 부담스럽지만 한 번 시도해보려 한다."},
+    {"title": "문제 직면 태도", "code": ["B", "A"], "question": "쉽지 않은 문제일수록 도전하려는 마음이 든다."},
+    {"title": "문제 직면 태도", "code": ["B", "A"], "question": "어려운 문제도 포기하지 않고 계속 풀어보려 한다."}
 ]
+
+# 질문 표시
+q = questions[st.session_state.page]
+st.header(f"{q['title']} ({st.session_state.page+1}/12)")
+st.write(q["question"])
+
+choice = st.radio("선택하세요:", ["그렇다", "아니다"], key=st.session_state.page)
+
+if st.button("다음"):
+    st.session_state.answers.append(q["code"][0] if choice == "그렇다" else q["code"][1])
+    st.session_state.page += 1
+    st.rerun()
+
+# 결과 페이지
+if st.session_state.page >= len(questions):
+    # 각 축별 최빈값 도출
+    L_R = Counter(st.session_state.answers[:3]).most_common(1)[0][0]
+    D_F = Counter(st.session_state.answers[3:6]).most_common(1)[0][0]
+    N_V = Counter(st.session_state.answers[6:9]).most_common(1)[0][0]
+    B_A = Counter(st.session_state.answers[9:12]).most_common(1)[0][0]
+
+    code = L_R + D_F + N_V + B_A
+
+    st.title(f"당신의 수학 MBTI: {code}")
+    # 이후 너가 만든 type_data에서 결과 보여주는 부분 이어서 넣으면 돼
 
 #선생님들 데이터
 teacher_data = {
@@ -267,6 +286,13 @@ type_data = {
     },
 }
 
+
+result = type_data[code]
+
+st.markdown(f"### {result['name']} ({code})")
+st.write(f"**성향 요약**: {result['desc']}")
+st.write(f"**추천 공부법**: {result['tip']}")
+
 #나랑 같은 유형의 선생님
 same_type_teachers = [name for name, t_code in teacher_data.items() if t_code == code]
 
@@ -283,32 +309,9 @@ for name, t_code in teacher_data.items():
     t_result = type_data.get(t_code)
     st.write(f"**{name}**: {t_result['name']} ({t_code})")
 
+st.markdown("---")
 
 
-# 답변 처리
-if st.session_state.page < len(questions):
-    q = questions[st.session_state.page]
-    st.header(f"Q{st.session_state.page + 1}. {q['title']}")
-    st.write(q["question"])
-    choice = st.radio("선택하세요:", q["options"], key=st.session_state.page)
-    
-    if st.button("다음"):
-        selected_code = choice.split("(")[1][0]  # L, R, D, F 등
-        st.session_state.answers.append(selected_code)
-        st.session_state.page += 1
-        st.rerun()
-
-else:
-    # 결과 계산
-    code = ''.join(st.session_state.answers)
-    result = type_data.get(code)
-
-    st.title("🧪 당신의 수학 MBTI 결과")
-    st.markdown(f"### {result['name']} ({code})")
-    st.write(f"**성향 요약**: {result['desc']}")
-    st.write(f"**추천 공부법**: {result['tip']}")
-
-    st.markdown("---")
     st.subheader("📘 MBTI 성향 축 설명")
 
     col1, col2 = st.columns(2)
