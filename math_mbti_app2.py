@@ -207,7 +207,7 @@ if st.session_state.page < len(questions):
         st.rerun() # 페이지 새로고침하여 다음 질문 표시
 else:
     # 모든 질문을 완료한 경우 결과 페이지 표시
-    st.header("당신의 수학 MBTI 결과")
+    st.header("수학 MBTI 결과")
 
     # 각 축별 최빈값 도출
     # 각 3문제씩 묶어 해당 축의 최종 MBTI 코드 결정
@@ -219,7 +219,7 @@ else:
     # 최종 MBTI 코드 조합
     code = L_R + D_F + N_V + B_A
 
-    st.title(f"당신의 수학 MBTI: {code}")
+   
 
     # 사용자 유형 정보 표시
     if code in type_data:
